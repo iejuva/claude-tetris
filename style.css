@@ -168,10 +168,11 @@ kbd {
   color: #7aa2f7;
 }
 
+.hidden { display: none; }
+
+#resume-btn,
 #restart-btn {
   margin-top: 8px;
-  background: #7aa2f7;
-  color: #0f0f17;
   border: none;
   border-radius: 6px;
   padding: 10px 28px;
@@ -180,6 +181,19 @@ kbd {
   cursor: pointer;
   letter-spacing: 1px;
   transition: background 0.15s;
+  color: #0f0f17;
+}
+
+#resume-btn {
+  background: #81c784;
+}
+
+#resume-btn:hover {
+  background: #a5d6a7;
+}
+
+#restart-btn {
+  background: #7aa2f7;
 }
 
 #restart-btn:hover {
