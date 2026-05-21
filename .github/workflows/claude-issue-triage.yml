@@ -1,0 +1,103 @@
+name: Claude Issue Triage
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  triage:
+    if: |
+      !contains(github.event.issue.labels.*.name, 'claude-analyzed') &&
+      github.event.sender.type != 'Bot'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Ensure labels exist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          declare -A LABELS=(
+            ["bug"]="d73a4a"
+            ["enhancement"]="a2eeef"
+            ["question"]="d876e3"
+            ["documentation"]="0075ca"
+            ["ui"]="fbca04"
+            ["gameplay"]="0e8a16"
+            ["performance"]="ff6b6b"
+            ["controls"]="5319e7"
+            ["scoring"]="c2e0c6"
+            ["refactor"]="bfdadc"
+            ["claude-analyzed"]="ededed"
+          )
+          for name in "${!LABELS[@]}"; do
+            gh label create "$name" --color "${LABELS[$name]}" --repo "$GITHUB_REPOSITORY" 2>/dev/null || true
+          done
+
+      - name: Run Claude triage
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: '--allowedTools "Bash(gh issue *),Bash(gh label *),Read,Glob,Grep"'
+          prompt: |
+            Eres un asistente de triaje de issues para este proyecto (Tetris en JS vanilla).
+            Lee el contexto técnico en CLAUDE.md y los archivos relevantes del repo antes de
+            emitir tu diagnóstico.
+
+            Issue a analizar:
+              Repo:   ${{ github.repository }}
+              Número: ${{ github.event.issue.number }}
+              Título: ${{ github.event.issue.title }}
+
+            Tareas (en orden):
+
+            1. Lee el issue completo:
+                 gh issue view ${{ github.event.issue.number }} --repo ${{ github.repository }}
+
+            2. Lee CLAUDE.md y game.js para entender la arquitectura del proyecto.
+
+            3. Elige entre 1 y 3 labels de esta lista FIJA (no uses otros):
+                 bug, enhancement, question, documentation, ui, gameplay,
+                 performance, controls, scoring, refactor
+
+            4. Aplica los labels elegidos + el label `claude-analyzed`:
+                 gh issue edit ${{ github.event.issue.number }} \
+                   --repo ${{ github.repository }} \
+                   --add-label "LABEL1,LABEL2,claude-analyzed"
+
+            5. Escribe el diagnóstico en un archivo temporal y publícalo como comentario:
+                 gh issue comment ${{ github.event.issue.number }} \
+                   --repo ${{ github.repository }} \
+                   --body-file /tmp/diagnostico.md
+
+               El archivo /tmp/diagnostico.md debe seguir esta plantilla en español:
+
+               ## Diagnóstico automático de Claude
+
+               **Resumen:** <1-2 frases describiendo el problema o solicitud>
+
+               **Categoría:** <labels elegidos y justificación breve>
+
+               **Análisis técnico:**
+               - Archivos probablemente afectados (rutas concretas del repo)
+               - Funciones / constantes relevantes en `game.js` si aplica
+               - Causa raíz sospechada o requisitos clave
+
+               **Propuesta de solución (alto nivel):**
+               - Pasos sugeridos sin escribir código
+
+               **Riesgos / consideraciones:**
+               - Efectos colaterales, regresiones posibles, edge cases
+
+            Restricciones:
+            - No modifiques ningún archivo del repo.
+            - No abras PRs ni issues.
+            - Si el issue es ambiguo, indícalo en el diagnóstico y solicita aclaración al autor.

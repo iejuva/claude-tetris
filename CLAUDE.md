@@ -36,6 +36,7 @@ Tres archivos: `index.html`, `style.css`, `game.js`. Toda la lógica está en `g
 - `collide()` — detecta colisiones con bordes y piezas bloqueadas
 - `tryRotate()` — rotación CW con wall kicks (±0, ±1, ±2 columnas)
 - `lockPiece()` → `merge()` → `clearLines()` — bloquea, fusiona y limpia líneas
+- `spawn()` — activa la pieza siguiente y detecta game over si colisiona al spawnar
 - `hardDrop()` / `softDrop()` — caída instantánea / acelerada
 - `ghostY()` — calcula la posición de aterrizaje para la ghost piece
 
@@ -60,6 +61,8 @@ Tres archivos: `index.html`, `style.css`, `game.js`. Toda la lógica está en `g
 - **Hard drop scoring**: suma 2 puntos por cada celda caída (`score += (ghostY - current.y) * 2`).
 - **Velocidad de caída**: `Math.max(100, 1000 - (level - 1) * 90)` ms — mínimo 100ms al nivel 10+.
 - **Wall kicks**: `tryRotate` intenta offsets `[0, -1, 1, -2, 2]` en X antes de rechazar la rotación.
+- **Progresión de nivel**: `level = Math.floor(lines / 10) + 1` — sube cada 10 líneas acumuladas.
+- **Space y scroll**: `hardDrop` llama `e.preventDefault()` — sin esto Space hace scroll en el navegador.
 
 ## Constantes importantes
 
