@@ -19,7 +19,7 @@ No hay pruebas automatizadas — la verificación es manual en el navegador.
 
 ## Arquitectura
 
-Tres archivos: `index.html`, `style.css`, `game.js`. Toda la lógica está en `game.js` (~305 líneas), sin dependencias externas.
+Tres archivos: `index.html`, `style.css`, `game.js`. Toda la lógica está en `game.js` (~310 líneas), sin dependencias externas.
 
 **Estado del juego** (variables globales en `game.js`):
 - `board` — matriz 10×20 donde 0 = vacío, 1–7 = índice de color de la pieza bloqueada
@@ -52,6 +52,7 @@ Tres archivos: `index.html`, `style.css`, `game.js`. Toda la lógica está en `g
 | `↓` | Soft drop (+1 pt por fila) |
 | `Space` | Hard drop instantáneo (+2 pt por celda) |
 | `P` | Pausar/reanudar |
+| `R` | Reiniciar juego |
 
 ## Comportamientos no obvios
 
