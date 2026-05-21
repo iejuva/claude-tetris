@@ -281,6 +281,7 @@ function init() {
 
 document.addEventListener('keydown', e => {
   if (e.code === 'KeyP') { togglePause(); return; }
+  if (e.code === 'KeyR') { init(); return; }
   if (paused || gameOver) return;
   switch (e.code) {
     case 'ArrowLeft':
