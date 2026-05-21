@@ -17,7 +17,42 @@ body {
 
 .wrapper {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
 }
+
+.game-title {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.letter {
+  display: grid;
+  grid-template-columns: repeat(3, 9px);
+  grid-template-rows: repeat(5, 9px);
+  gap: 1px;
+}
+
+.letter i {
+  grid-column: var(--x);
+  grid-row: var(--y);
+  background: currentColor;
+  border-radius: 2px;
+  box-shadow:
+    inset 0 3px 0 rgba(255,255,255,0.18),
+    0 0 8px 0 currentColor;
+}
+
+.letter-t  { color: #ba68c8; } /* T1 - morado  */
+.letter-e  { color: #ffd54f; } /* E  - amarillo */
+.letter-t2 { color: #81c784; } /* T2 - verde   */
+.letter-r  { color: #e57373; } /* R  - rojo    */
+.letter-i  { color: #4dd0e1; } /* I  - cyan    */
+.letter-s  { color: #ffb74d; } /* S  - naranja */
 
 .game-container {
   display: flex;
